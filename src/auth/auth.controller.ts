@@ -15,7 +15,7 @@ export class AuthController {
   @Post('register')
   @HttpCode(201)
   async register(createUserDto: CreateUserDto) {
-    
+    const user = await this.authService.createUser(createUserDto);
   }
 
   @Post('logout')
