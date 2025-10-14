@@ -9,10 +9,10 @@ import { Model } from "mongoose";
 export class UserService {
     constructor(@InjectModel("User") private userModel: Model<UserDocument>) {}
 
-    create(createUserDto: CreateUserDto) {
+    async create(createUserDto: CreateUserDto) {
         try {
             const createdUser = new this.userModel(createUserDto);
-            return createdUser.save();
+            return await createdUser.save();
         } catch (error) {
             if (error === 11000) {
                 throw new ConflictException("E-mail já está em uso");
