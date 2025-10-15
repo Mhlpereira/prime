@@ -1,6 +1,7 @@
 import { Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,8 @@ export class AuthController {
   }
 
   @Post('register')
-  @HttpCode(201)
+  @ApiOperation({ summary: 'Cria um novo usuário'})
+  @ApiResponse({status: 201, description: 'Usuário criado com sucesso' })
   async register(createUserDto: CreateUserDto) {
     const user = await this.authService.createUser(createUserDto);
   }

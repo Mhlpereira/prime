@@ -17,7 +17,9 @@ async function bootstrap() {
         .addTag("PV")
         .build();
 
-    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    const documentFactory = () => SwaggerModule.createDocument(app, config, {
+        deepScanRoutes: true
+    });
     SwaggerModule.setup('api', app, documentFactory);
 
     await app.listen(3000, "0.0.0.0");
