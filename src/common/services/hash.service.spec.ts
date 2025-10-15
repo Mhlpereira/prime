@@ -48,5 +48,7 @@ describe("HashService", () => {
             const result = await service.compare('senhaErrada', hashed);
             expect(result).toBe(false);
         })
+
+        it('shoulnd ')
     });
 });
