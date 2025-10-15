@@ -259,25 +259,6 @@ docker run -d \
   redis:alpine
 ```
 
-### Nginx (Proxy Reverso)
-
-Configure o Nginx como proxy reverso para a aplicação:
-
-```bash
-# Instale o Nginx (Ubuntu/Debian)
-sudo apt update
-sudo apt install nginx
-
-# Ou com Docker
-docker run -d \
-  --name nginx \
-  -p 80:80 \
-  -p 443:443 \
-  -v $(pwd)/nginx/nginx.conf:/etc/nginx/nginx.conf:ro \
-  nginx:alpine
-
-Exemplo de configuração básica do Nginx (`nginx/nginx.conf`):
-
 
 ## 📜 Scripts Disponíveis
 
