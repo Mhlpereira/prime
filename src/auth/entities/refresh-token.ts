@@ -8,7 +8,7 @@ export class RefreshToken extends Document {
     token: string;
 
     @Prop({required: true, ref: 'User', type: Types.ObjectId})
-    userId: string;
+    userId: Types.ObjectId;
 
     @Prop({required: true})
     expiresAt: Date;
@@ -21,3 +21,5 @@ export class RefreshToken extends Document {
 }
 
 export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);
+
+RefreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
