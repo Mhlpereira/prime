@@ -1,8 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { HashService } from "./hash.service";
+import { BadRequestException } from "@nestjs/common";
 
 describe("HashService", () => {
     let service: HashService;
+    const saltRounds = 10;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -11,7 +13,6 @@ describe("HashService", () => {
 
         service = module.get<HashService>(HashService);
     });
-
 
     describe("hash", () => {
         it("should hash a password", async () => {
@@ -30,10 +31,15 @@ describe("HashService", () => {
 
             expect(hash1).not.toBe(hash2);
         });
+
+        it(`shouldn't hash empty strings `, async ()=>{
+
+            await expect(service.hash('')).rejects.toThrow(BadRequestException);
+        })
     });
 
     describe("compare", () => {
-        it('should return true for matching password and hash', async () => {
+        it("should return true for matching password and hash", async () => {
             const password = "senhaSecreta";
             const hashed = await service.hash(password);
 
@@ -41,14 +47,18 @@ describe("HashService", () => {
             expect(compared).toBe(true);
         });
 
-        it('should return false for non-matching password', async () => {
+        it("should return false for non-matching password", async () => {
             const password = "senhaSecreta";
             const hashed = await service.hash(password);
 
-            const result = await service.compare('senhaErrada', hashed);
+            const result = await service.compare("senhaErrada", hashed);
             expect(result).toBe(false);
-        })
+        });
 
-        it('shoulnd ')
+        it(`shouldn't accept empty strings`, async () => {
+            const hashed = await service.hash("senhaSecreta");
+
+            await expect(service.compare("password", "")).rejects.toThrow(BadRequestException);
+        });
     });
 });
