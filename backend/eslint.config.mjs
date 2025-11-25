@@ -16,15 +16,14 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
-    // Regras que você pode desativar ou ajustar
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'prettier/prettier': ['error', { 
       endOfLine: 'auto',
-      singleQuote: false, // Permite aspas duplas
-      printWidth: 120, // Linhas mais longas
+      singleQuote: false, 
+      printWidth: 120, 
       tabWidth: 2,
       trailingComma: 'es5',
       arrowParens: 'avoid',
