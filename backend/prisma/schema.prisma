@@ -47,6 +47,9 @@ model User {
   graduations Graduation[]  @relation("GraduationStudent")
   grantedGraduations Graduation[] @relation("GraduationTeacher")
 
+  instructedClasses Class[] @relation("ClassInstructor")
+  attendances       Attendance[] @relation("StudentAttendance")
+
   ownedGyms Gym[] @relation("Gym_ownerId")
 }
 
@@ -76,9 +79,44 @@ model GymTeam {
   sport       Sport    @relation(fields: [sportId], references: [id])
 
   schedules TeamSchedule[]
+  classes   Class[]
 
   @@index([gymId, sportId])
 }
+
+model Class {
+  id          String   @id @default(ulid())
+  date        DateTime @default(now())
+  startTime   String
+  endTime     String?
+  notes       String?
+  
+  teamId      String
+  instructorId String
+  
+  team        GymTeam  @relation(fields: [teamId], references: [id])
+  instructor  User     @relation("ClassInstructor", fields: [instructorId], references: [id])
+  
+  attendances Attendance[]
+  
+  @@index([teamId, date])
+}
+
+model Attendance {
+  id        String   @id @default(ulid())
+  present   Boolean  @default(false)
+  checkedAt DateTime?
+  
+  classId   String
+  studentId String
+  
+  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student   User     @relation("StudentAttendance", fields: [studentId], references: [id])
+  
+  @@unique([classId, studentId])
+  @@index([studentId])
+}
+
 
 model TeamSchedule{
   id          String   @id @default(ulid()) 
