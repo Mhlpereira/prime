@@ -25,23 +25,64 @@ model User {
   gyms      UserGym[]
 
   graduations Graduation[]  @relation("GraduationStudent")
-
   grantedGraduations Graduation[] @relation("GraduationTeacher")
 
+  ownedGyms Gym[] @relation("Gym_ownerId")
 }
 
+model Gym {
+  id          String    @id
+  name        String    @unique
+  description String?
+  ownerId     String    
+
+  owner       User      @relation("Gym_ownerId", fields: [ownerId], references: [id])
+  sports      GymSport[]
+  teams       GymTeam[]
+  users       UserGym[] 
+}
+
+model GymTeam {
+  id          String   @id @default(cuid()) // ou ulid()
+  name        String
+  description String?
+  openTime    String?
+  closeTime   String?
+
+  gymId       String
+  sportId     String
+
+  gym         Gym      @relation(fields: [gymId], references: [id])
+  sport       Sport    @relation(fields: [sportId], references: [id])
+
+  @@index([gymId, sportId])
+}
+
+
 model Sport {
-  id     Int     @id @default(autoincrement())
+  id     String     @id 
   name   String  @unique
 
   users UserSport[]
-  gyms  UserGym[]
-  graduation Graduation[]
+  gyms   GymSport[]
+  userGyms UserGym[]        
+  teams    GymTeam[]       
+  graduations Graduation[]  
+}
+
+model GymSport {
+  gymId   String
+  sportId String
+
+  gym     Gym   @relation(fields: [gymId], references: [id])
+  sport   Sport @relation(fields: [sportId], references: [id])
+
+  @@id([gymId, sportId])
 }
 
 model UserSport {
   userId  String
-  sportId Int
+  sportId String
 
   user    User  @relation(fields: [userId], references: [id])
   sport   Sport @relation(fields: [sportId], references: [id])
@@ -51,26 +92,28 @@ model UserSport {
 
 model UserGym {
   userId  String
-  sportId Int
-  gymName String
+  gymId   String
+  sportId String
 
-  user    User  @relation(fields: [userId], references: [id])
+  user    User @relation(fields: [userId], references: [id])
+  gym     Gym  @relation(fields: [gymId], references: [id])
   sport   Sport @relation(fields: [sportId], references: [id])
 
-  @@id([userId, sportId])
+  role    String? 
+
+  @@id([userId, gymId, sportId])
 }
 
 model Graduation {
-  id        Int      @id @default(autoincrement())
-  level     String   
+  id        String   @id @default(cuid()) // ou ulid()
+  level     String
   date      DateTime @default(now())
 
-  student      User  @relation("GraduationStudent", fields: [studentId], references: [id])
-  studentId    String
+  studentId String
+  teacherId String?
+  sportId   String
 
-  teacher      User? @relation("GraduationTeacher", fields: [teacherId], references: [id])
-  teacherId    String?
-
-  sport        Sport @relation(fields: [sportId], references: [id])
-  sportId      Int
+  student   User     @relation("GraduationStudent", fields: [studentId], references: [id])
+  teacher   User?    @relation("GraduationTeacher", fields: [teacherId], references: [id])
+  sport     Sport    @relation(fields: [sportId], references: [id])
 }
