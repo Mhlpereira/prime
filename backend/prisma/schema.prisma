@@ -12,3 +12,65 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+
+model User {
+  id        String @id //ulid
+  email     String @unique
+  password  String
+  name      String
+  birthday  DateTime
+
+  sports    UserSport[]
+  gyms      UserGym[]
+
+  graduations Graduation[]  @relation("GraduationStudent")
+
+  grantedGraduations Graduation[] @relation("GraduationTeacher")
+
+}
+
+model Sport {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+
+  users UserSport[]
+  gyms  UserGym[]
+  graduation Graduation[]
+}
+
+model UserSport {
+  userId  String
+  sportId Int
+
+  user    User  @relation(fields: [userId], references: [id])
+  sport   Sport @relation(fields: [sportId], references: [id])
+
+  @@id([userId, sportId])
+}
+
+model UserGym {
+  userId  String
+  sportId Int
+  gymName String
+
+  user    User  @relation(fields: [userId], references: [id])
+  sport   Sport @relation(fields: [sportId], references: [id])
+
+  @@id([userId, sportId])
+}
+
+model Graduation {
+  id        Int      @id @default(autoincrement())
+  level     String   
+  date      DateTime @default(now())
+
+  student      User  @relation("GraduationStudent", fields: [studentId], references: [id])
+  studentId    String
+
+  teacher      User? @relation("GraduationTeacher", fields: [teacherId], references: [id])
+  teacherId    String?
+
+  sport        Sport @relation(fields: [sportId], references: [id])
+  sportId      Int
+}
