@@ -13,9 +13,29 @@ datasource db {
   provider = "postgresql"
 }
 
+//enums
+enum GymRole {
+  ADMIN
+  PROFESSOR
+  MANAGER
+  STUDENT
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+
+//entities
 
 model User {
-  id        String @id //ulid
+  id        String @id @default(ulid())
   email     String @unique
   password  String
   name      String
@@ -31,7 +51,7 @@ model User {
 }
 
 model Gym {
-  id          String    @id
+  id          String   @id @default(ulid()) 
   name        String    @unique
   description String?
   ownerId     String    
@@ -43,7 +63,7 @@ model Gym {
 }
 
 model GymTeam {
-  id          String   @id @default(cuid()) 
+  id          String   @id @default(ulid()) 
   name        String
   description String?
   openTime    String?
@@ -55,12 +75,25 @@ model GymTeam {
   gym         Gym      @relation(fields: [gymId], references: [id])
   sport       Sport    @relation(fields: [sportId], references: [id])
 
+  schedules TeamSchedule[]
+
   @@index([gymId, sportId])
 }
 
+model TeamSchedule{
+  id          String   @id @default(ulid()) 
+  dayOfWeek DayOfWeek
+  startTime String
+  endTime String?
+
+  teamId  String
+  team      GymTeam    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+}
 
 model Sport {
-  id     String     @id 
+  id          String   @id @default(ulid()) 
   name   String  @unique
 
   users UserSport[]
@@ -69,6 +102,9 @@ model Sport {
   teams    GymTeam[]       
   graduations Graduation[]  
 }
+
+
+//relations 
 
 model GymSport {
   gymId   String
@@ -99,13 +135,13 @@ model UserGym {
   gym     Gym  @relation(fields: [gymId], references: [id])
   sport   Sport @relation(fields: [sportId], references: [id])
 
-  role    String? 
+  role    GymRole
 
   @@id([userId, gymId, sportId])
 }
 
 model Graduation {
-  id        String   @id @default(cuid()) 
+  id          String   @id @default(ulid()) 
   level     String
   date      DateTime @default(now())
 
