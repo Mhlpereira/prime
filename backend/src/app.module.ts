@@ -6,6 +6,7 @@ import { TeamsModule } from "./teams/teams.module";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthModule } from './auth/auth.module';
+import { GymModule } from './gym/gym.module';
 
 @Module({
     imports: [ConfigModule.forRoot({ isGlobal: true }), MongooseModule.forRootAsync({
@@ -20,7 +21,7 @@ import { AuthModule } from './auth/auth.module';
         maxPoolSize: 10,
       }),
       inject: [ConfigService],
-    }), UserModule, TeamsModule, AuthModule],
+    }), UserModule, TeamsModule, AuthModule, GymModule],
     controllers: [AppController],
     providers: [AppService],
 })

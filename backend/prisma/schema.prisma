@@ -43,7 +43,7 @@ model Gym {
 }
 
 model GymTeam {
-  id          String   @id @default(cuid()) // ou ulid()
+  id          String   @id @default(cuid()) 
   name        String
   description String?
   openTime    String?
@@ -105,7 +105,7 @@ model UserGym {
 }
 
 model Graduation {
-  id        String   @id @default(cuid()) // ou ulid()
+  id        String   @id @default(cuid()) 
   level     String
   date      DateTime @default(now())
 
