@@ -16,7 +16,7 @@ export class AuthController {
     @Post("register")
     @ApiOperation({ summary: "Cria um novo usuário" })
     @ApiResponse({ status: 201, description: "Usuário criado com sucesso" })
-    async register(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) reply: FastifyReply): Promise<OutputRegisterDto> {
+    async register(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) reply: FastifyReply) {
 
         const { user, accessToken, refreshToken } = await this.authService.createUser(createUserDto);
 
@@ -24,23 +24,8 @@ export class AuthController {
             throw new UnauthorizedException("Erro ao registrar usuário");
         }
 
-        reply.setCookie("access_token", accessToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 2 * 60 * 60, // segundos (2h)
-            path: "/",
-        });
 
-        reply.setCookie("refresh_token", refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            maxAge: 30 * 24 * 60 * 60, // segundos (30 dias)
-            path: "/",
-        });
-
-        return plainToClass(OutputRegisterDto, user);
+        return  {user,accessToken, refreshToken}
     }
 
     @Post("logout")
