@@ -41,6 +41,8 @@ model User {
   name      String
   birthday  DateTime
 
+  refreshTokens RefreshToken[]
+
   sports    UserSport[]
   gyms      UserGym[]
 
@@ -190,4 +192,17 @@ model Graduation {
   student   User     @relation("GraduationStudent", fields: [studentId], references: [id])
   teacher   User?    @relation("GraduationTeacher", fields: [teacherId], references: [id])
   sport     Sport    @relation(fields: [sportId], references: [id])
+}
+
+
+model RefreshToken {
+  id        String   @id @default(ulid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
