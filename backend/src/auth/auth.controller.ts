@@ -17,15 +17,6 @@ export class AuthController {
     @ApiOperation({ summary: "Cria um novo usuário" })
     @ApiResponse({ status: 201, description: "Usuário criado com sucesso" })
     async register(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) reply: FastifyReply) {
-
-        const { user, accessToken, refreshToken } = await this.authService.createUser(createUserDto);
-
-        if (!user) {
-            throw new UnauthorizedException("Erro ao registrar usuário");
-        }
-
-
-        return  {user,accessToken, refreshToken}
     }
 
     @Post("logout")

@@ -7,8 +7,7 @@ import { CustomLogger } from "./logger/custom.logger";
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
-    const logger = app.get(CustomLogger)
-    app.use(logger);
+    app.useLogger(app.get(CustomLogger));
 
     const config = new DocumentBuilder()
         .setTitle("Prime Victory")
