@@ -1,42 +1,78 @@
+# ===============================
+# FLUTTER / DART
+# ===============================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+.pub-cache/
+build/
+generated_plugin_registrant.dart
 
+# Linux desktop build files
+**/linux/flutter/ephemeral/
+
+# ===============================
+# ANDROID (necessário no Linux)
+# ===============================
+**/android/.gradle/
+**/android/local.properties
+**/android/gradlew*
+**/android/gradlew.bat
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# ===============================
+# NODE / JAVASCRIPT / WEB
+# ===============================
+node_modules/
 dist/
 build/
-node_modules/
-
 logs/
 *.log
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
-yarn-error.log*
+pnpm-debug.log*
 lerna-debug.log*
 
+# Ambiente
 *.env
 *.env.*
 
+# Cobertura
 coverage/
 .nyc_output/
 
-.DS_Store
-
-
-.idea/
-.vscode/
-*.sublime-workspace
-.project
-.classpath
-.c9/
-.settings/
-*.launch
-
+# Cache e temporários
 .temp/
 .tmp/
 
+# ===============================
+# EDITORES / IDE
+# ===============================
+.vscode/
+.idea/
+*.iml
 
+# ===============================
+# SISTEMA
+# ===============================
+.DS_Store
+
+# ===============================
+# PROCESSOS / LOCKS
+# ===============================
 pids/
 *.pid
 *.seed
 *.pid.lock
 
-
+# ===============================
+# MISC
+# ===============================
 report.*.json
+
+# Flutter apps não precisam comitar pubspec.lock
+pubspec.lock
