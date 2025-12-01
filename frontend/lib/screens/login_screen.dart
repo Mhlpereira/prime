@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -88,20 +89,12 @@ class LoginScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                            ),
+                            border: Border.all(color: Colors.grey.shade300),
                             boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 6,
-                              )
+                              BoxShadow(color: Colors.black12, blurRadius: 6),
                             ],
                           ),
-                          child: Image.asset(
-                            'assets/google.png',
-                            height: 32,
-                          ),
+                          child: Image.asset('assets/google.png', height: 32),
                         ),
                       ),
                       SizedBox(width: 24),
@@ -114,10 +107,7 @@ class LoginScreen extends StatelessWidget {
                             color: Color(0xFF1877F2),
                             shape: BoxShape.circle,
                             boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 6,
-                              )
+                              BoxShadow(color: Colors.black12, blurRadius: 6),
                             ],
                           ),
                           child: Icon(
@@ -133,7 +123,14 @@ class LoginScreen extends StatelessWidget {
                   SizedBox(height: 20),
 
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegisterScreen(),
+                        ),
+                      );
+                    },
                     child: Text(
                       'Ainda não tem uma conta? Criar conta',
                       style: TextStyle(color: Colors.blue[700]),
