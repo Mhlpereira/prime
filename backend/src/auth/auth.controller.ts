@@ -15,7 +15,18 @@ export class AuthController {
     @ApiOperation({ summary: "Cria um novo usuário" })
     @ApiResponse({ status: 201, description: "Usuário criado com sucesso" })
     async register(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) reply: FastifyReply) {
-        const {user, tokens} = await this.authService.createUser(createUserDto);
+        const { user, tokens } = await this.authService.createUser(createUserDto);
+
+        return {
+            user: {
+                email: user.email,
+                name: user.name,
+            },
+            tokens: {
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+            },
+        };
     }
 
     @Post("logout")
