@@ -1,19 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
-import { payloadTokenDto } from "./dto/payload-token.dto";
 import { HashService } from "../common/hash/hash.service";
 import { UserService } from "../user/user.service";
 import { User } from "../../generated/prisma";
+import { LoginDto } from "./dto/login-dto";
+import { TokenService } from "../common/token/token.service";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly jwtService: JwtService,
-        private readonly configService: ConfigService,
         private readonly hashService: HashService,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly tokenService: TokenService
     ) {}
 
     async createUser(
@@ -26,26 +24,14 @@ export class AuthService {
             password: hashedPassword,
         });
 
-        const tokens = await this.tokensGenerate({
-            sub: user.id,
-            email: user.email,
-            name: user.name,
-        });
+        const tokens = await this.tokenService.generateTokens(user);
 
         return { user, tokens };
     }
 
-    async tokensGenerate(payload: payloadTokenDto) {
-        const accessToken = this.jwtService.sign(payload, {
-            secret: this.configService.get<string>("JWT_SECRET"),
-            expiresIn: "30m",
-        });
-
-        const refreshToken = this.jwtService.sign(payload, {
-            secret: this.configService.get<string>("JWT_REFRESH"),
-            expiresIn: "30d",
-        });
-
-        return { accessToken, refreshToken };
+    async login(loginDto: LoginDto) {
+        const user = await this.userService.validate(loginDto);
+        const tokens = await this.tokenService.generateTokens(user);
+        return { user, tokens };
     }
 }

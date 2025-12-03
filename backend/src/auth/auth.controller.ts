@@ -4,6 +4,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { FastifyReply } from "fastify";
 import { Public } from "../common/decorator/isPublic.decorator";
+import { LoginDto } from "./dto/login-dto";
 
 @Controller()
 export class AuthController {
@@ -11,7 +12,23 @@ export class AuthController {
 
     @Post("login")
     @HttpCode(200)
-    async login() {}
+    @Public()
+    @ApiOperation({summary: "Loga no sistema"})
+    @ApiResponse({ status: 200, description: "Logado com sucesso."})
+    async login(@Body() loginDto: LoginDto) {
+        const { user, tokens } = await this.authService.login(loginDto);
+        
+        return {
+            user: {
+                email: user.email,
+                name: user.name,
+            },
+            tokens: {
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+            },
+        };
+    }
 
     
     @Post("register")

@@ -1,12 +1,24 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+    UnauthorizedException,
+} from "@nestjs/common";
 import { CreateUserDto } from "../auth/dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { PrismaService } from "../prisma/prisma.service";
 import { Prisma } from "@prisma/client";
+import { LoginDto } from "../auth/dto/login-dto";
+import { HashService } from "../common/hash/hash.service";
 
 @Injectable()
 export class UserService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly hashService: HashService
+    ) {}
 
     async create(createUserDto: CreateUserDto) {
         try {
@@ -33,8 +45,38 @@ export class UserService {
         }
     }
 
-    findAll() {
-        return `This action returns all user`;
+    async validate(loginDto: LoginDto) {
+        try {
+            const user = await this.findByEmail(loginDto.email);
+
+            if (!user) {
+                throw new UnauthorizedException("Invalid credentials."); 
+            }
+
+            const isPasswordValid = await this.hashService.compare(loginDto.password, user.password);
+
+            if (!isPasswordValid) {
+                throw new UnauthorizedException("Invalid credentials."); 
+            }
+
+            return user; 
+        } catch (error) {
+            if (error instanceof UnauthorizedException) {
+                throw error;
+            }
+            throw new InternalServerErrorException("Failed to validate user credentials.");
+        }
+    }
+
+    async findByEmail(email: string) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { email },
+            });
+            return user;
+        } catch (error) {
+            throw new InternalServerErrorException("Failed to fetch user.");
+        }
     }
 
     findOne(id: number) {

@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { HashService } from '../common/hash/hash.service';
 import { UserService } from '../user/user.service';
+import { TokenService } from '../common/token/token.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ConflictException } from '@nestjs/common';
 
@@ -11,7 +10,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let userService: UserService;
   let hashService: HashService;
-  let jwtService: JwtService;
+  let tokenService: TokenService;
 
   const mockUserService = {
     create: jest.fn(),
@@ -23,16 +22,10 @@ describe('AuthService', () => {
     compare: jest.fn(),
   };
 
-  const mockJwtService = {
-    sign: jest.fn(),
-  };
-
-  const mockConfigService = {
-    get: jest.fn((key: string) => {
-      if (key === 'JWT_SECRET') return 'test-secret';
-      if (key === 'JWT_REFRESH') return 'test-refresh-secret';
-      return null;
-    }),
+  const mockTokenService = {
+    generateTokens: jest.fn(),
+    verifyAccessToken: jest.fn(),
+    verifyRefreshToken: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -41,15 +34,14 @@ describe('AuthService', () => {
         AuthService,
         { provide: UserService, useValue: mockUserService },
         { provide: HashService, useValue: mockHashService },
-        { provide: JwtService, useValue: mockJwtService },
-        { provide: ConfigService, useValue: mockConfigService },
+        { provide: TokenService, useValue: mockTokenService },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
     hashService = module.get<HashService>(HashService);
-    jwtService = module.get<JwtService>(JwtService);
+    tokenService = module.get<TokenService>(TokenService);
   });
 
   afterEach(() => {
@@ -83,9 +75,10 @@ describe('AuthService', () => {
     it('should successfully register a new user', async () => {
       mockHashService.hash.mockResolvedValue(hashedPassword);
       mockUserService.create.mockResolvedValue(createdUser);
-      mockJwtService.sign
-        .mockReturnValueOnce(accessToken)
-        .mockReturnValueOnce(refreshToken);
+      mockTokenService.generateTokens.mockResolvedValue({
+        accessToken,
+        refreshToken,
+      });
 
       const result = await service.createUser(createUserDto);
 
@@ -94,7 +87,7 @@ describe('AuthService', () => {
         ...createUserDto,
         password: hashedPassword,
       });
-      expect(jwtService.sign).toHaveBeenCalledTimes(2);
+      expect(tokenService.generateTokens).toHaveBeenCalledWith(createdUser);
       expect(result).toEqual({
         user: createdUser,
         tokens: {
@@ -128,38 +121,6 @@ describe('AuthService', () => {
       );
       expect(hashService.hash).toHaveBeenCalledWith(createUserDto.password);
       expect(userService.create).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('tokensGenerate', () => {
-    const payload = {
-      sub: '01JDXXXXX',
-      email: 'test@example.com',
-      name: 'Test User',
-    };
-
-    const accessToken = 'access_token_mock';
-    const refreshToken = 'refresh_token_mock';
-
-    it('should generate access and refresh tokens', async () => {
-      mockJwtService.sign
-        .mockReturnValueOnce(accessToken)
-        .mockReturnValueOnce(refreshToken);
-
-      const result = await service.tokensGenerate(payload);
-
-      expect(jwtService.sign).toHaveBeenCalledWith(payload, {
-        secret: 'test-secret',
-        expiresIn: '30m',
-      });
-      expect(jwtService.sign).toHaveBeenCalledWith(payload, {
-        secret: 'test-refresh-secret',
-        expiresIn: '30d',
-      });
-      expect(result).toEqual({
-        accessToken,
-        refreshToken,
-      });
     });
   });
 });

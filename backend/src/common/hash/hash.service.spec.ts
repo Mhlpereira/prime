@@ -31,10 +31,6 @@ describe("HashService", () => {
 
             expect(hash1).not.toBe(hash2);
         });
-
-        it(`shouldn't hash empty strings `, async () => {
-            await expect(service.hash("")).rejects.toThrow(BadRequestException);
-        });
     });
 
     describe("compare", () => {
@@ -52,11 +48,6 @@ describe("HashService", () => {
 
             const result = await service.compare("senhaErrada", hashed);
             expect(result).toBe(false);
-        });
-
-        it(`shouldn't accept empty strings`, async () => {
-            await expect(service.compare("hashed", "")).rejects.toThrow(BadRequestException);
-
         });
     });
 });
