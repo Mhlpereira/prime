@@ -5,6 +5,7 @@ import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { FastifyReply } from "fastify";
 import { Public } from "../common/decorator/isPublic.decorator";
 import { LoginDto } from "./dto/login-dto";
+import { LogoutDto } from "./dto/logout-dto";
 
 @Controller()
 export class AuthController {
@@ -53,5 +54,10 @@ export class AuthController {
 
     @Post("logout")
     @HttpCode(200)
-    async logout() {}
+    @ApiOperation({ summary: "Desconecta o usuário do sistema" })
+    @ApiResponse({ status: 200, description: "Deslogado com sucesso." })
+    async logout(@Body() logoutDto: LogoutDto) {
+        await this.authService.logout(logoutDto.refreshToken);
+        return { message: "Deslogado com sucesso" };
+    }
 }

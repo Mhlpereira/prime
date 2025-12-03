@@ -5,13 +5,15 @@ import { UserService } from "../user/user.service";
 import { User } from "../../generated/prisma";
 import { LoginDto } from "./dto/login-dto";
 import { TokenService } from "../common/token/token.service";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly hashService: HashService,
         private readonly userService: UserService,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
+        private readonly prisma: PrismaService
     ) {}
 
     async createUser(
@@ -24,14 +26,20 @@ export class AuthService {
             password: hashedPassword,
         });
 
-        const tokens = await this.tokenService.generateTokens(user);
+        const tokens = this.tokenService.generateTokens(user);
 
         return { user, tokens };
     }
 
     async login(loginDto: LoginDto) {
         const user = await this.userService.validate(loginDto);
-        const tokens = await this.tokenService.generateTokens(user);
+        const tokens = this.tokenService.generateTokens(user);
         return { user, tokens };
+    }
+
+    async logout(refreshToken: string): Promise<void> {
+        await this.prisma.refreshToken.deleteMany({
+            where: { token: refreshToken },
+        });
     }
 }

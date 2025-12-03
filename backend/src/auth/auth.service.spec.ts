@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { HashService } from '../common/hash/hash.service';
 import { UserService } from '../user/user.service';
 import { TokenService } from '../common/token/token.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ConflictException } from '@nestjs/common';
 
@@ -28,6 +29,12 @@ describe('AuthService', () => {
     verifyRefreshToken: jest.fn(),
   };
 
+  const mockPrismaService = {
+    refreshToken: {
+      deleteMany: jest.fn(),
+    },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -35,6 +42,7 @@ describe('AuthService', () => {
         { provide: UserService, useValue: mockUserService },
         { provide: HashService, useValue: mockHashService },
         { provide: TokenService, useValue: mockTokenService },
+        { provide: PrismaService, useValue: mockPrismaService },
       ],
     }).compile();
 
@@ -75,7 +83,7 @@ describe('AuthService', () => {
     it('should successfully register a new user', async () => {
       mockHashService.hash.mockResolvedValue(hashedPassword);
       mockUserService.create.mockResolvedValue(createdUser);
-      mockTokenService.generateTokens.mockResolvedValue({
+      mockTokenService.generateTokens.mockReturnValue({
         accessToken,
         refreshToken,
       });
