@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { FastifyReply } from "fastify";
+import { Public } from "../common/decorator/isPublic.decorator";
 
 @Controller()
 export class AuthController {
@@ -11,7 +12,11 @@ export class AuthController {
     @Post("login")
     @HttpCode(200)
     async login() {}
+
+    
     @Post("register")
+    @Public()
+    @HttpCode(201) 
     @ApiOperation({ summary: "Cria um novo usuário" })
     @ApiResponse({ status: 201, description: "Usuário criado com sucesso" })
     async register(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) reply: FastifyReply) {
