@@ -1,11 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGymDto } from './dto/create-gym.dto';
 import { UpdateGymDto } from './dto/update-gym.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class GymService {
-  create(createGymDto: CreateGymDto) {
-    return 'This action adds a new gym';
+  constructor(private prisma: PrismaService) {}
+
+  async create(createGymDto: CreateGymDto, ownerId: string) {
+    return this.prisma.gym.create({
+      data: {
+        name: createGymDto.name,
+        description: createGymDto.description,
+        ownerId,
+      },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
   }
 
   findAll() {

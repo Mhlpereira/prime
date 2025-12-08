@@ -1,15 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { GymService } from './gym.service';
 import { CreateGymDto } from './dto/create-gym.dto';
 import { UpdateGymDto } from './dto/update-gym.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorator/current-user.decorator';
 
 @Controller('gym')
+@UseGuards(JwtAuthGuard)
 export class GymController {
   constructor(private readonly gymService: GymService) {}
 
   @Post()
-  create(@Body() createGymDto: CreateGymDto) {
-    return this.gymService.create(createGymDto);
+  create(
+    @Body() createGymDto: CreateGymDto,
+    @CurrentUser('sub') userId: string,
+  ) {
+    return this.gymService.create(createGymDto, userId);
   }
 
   @Get()
