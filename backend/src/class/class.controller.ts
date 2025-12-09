@@ -13,15 +13,18 @@ import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { FilterClassDto } from './dto/filter-class.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GymRoleGuard } from '../common/guards/gym-role.guard';
 import { CurrentUser } from '../common/decorator/current-user.decorator';
+import { RequireGymRole } from '../common/decorator/require-gym-role.decorator';
+import { Permission } from '../common/rbac/rbac.constants';
 
 @Controller('class')
-@UseGuards(JwtAuthGuard)
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
   @Post()
+  @UseGuards(GymRoleGuard)
+  @RequireGymRole({ permissions: [Permission.CLASS_CREATE] })
   create(
     @Body() createClassDto: CreateClassDto,
     @CurrentUser('sub') userId: string,
@@ -62,6 +65,8 @@ export class ClassController {
   }
 
   @Patch(':id')
+  @UseGuards(GymRoleGuard)
+  @RequireGymRole({ permissions: [Permission.CLASS_UPDATE] })
   update(
     @Param('id') id: string,
     @Body() updateClassDto: UpdateClassDto,
@@ -71,6 +76,8 @@ export class ClassController {
   }
 
   @Delete(':id')
+  @UseGuards(GymRoleGuard)
+  @RequireGymRole({ permissions: [Permission.CLASS_DELETE] })
   remove(
     @Param('id') id: string,
     @CurrentUser('sub') userId: string,
