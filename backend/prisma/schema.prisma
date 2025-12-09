@@ -31,6 +31,12 @@ enum DayOfWeek {
   SUNDAY
 }
 
+enum ClassVisibility {
+  GYM      
+  TEAM   
+  PRIVATE  
+}
+
 
 //entities
 
@@ -92,6 +98,8 @@ model Class {
   startTime   String
   endTime     String?
   notes       String?
+  visibility  ClassVisibility @default(TEAM)
+  maxStudents Int?
   
   teamId      String
   instructorId String
@@ -102,6 +110,7 @@ model Class {
   attendances Attendance[]
   
   @@index([teamId, date])
+  @@index([visibility])
 }
 
 model Attendance {
