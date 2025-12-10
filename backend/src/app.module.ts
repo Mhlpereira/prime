@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AuthModule } from './auth/auth.module';
 import { GymModule } from './gym/gym.module';
 import { ClassModule } from './class/class.module';
+import { TeamModule } from './gym/team/team.module';
 import { CustomLoggerModule } from './common/logger/logger.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RbacModule } from './common/rbac/rbac.module';
@@ -17,7 +18,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     ConfigModule.forRoot({
         isGlobal:true,
     }),
-        UserModule, AuthModule, GymModule, ClassModule, CustomLoggerModule, PrismaModule, RbacModule],
+        UserModule, AuthModule, GymModule, ClassModule, TeamModule, CustomLoggerModule, PrismaModule, RbacModule],
     controllers: [AppController],
     providers: [
         AppService,
